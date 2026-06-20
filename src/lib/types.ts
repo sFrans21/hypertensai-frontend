@@ -9,7 +9,7 @@ export interface AnalyzePayload {
   age: number;
   is_female: number; // 1 = Perempuan, 0 = Laki-laki
   bmi: number;
-  waist_cm: number;
+  waist_cm: number | null; // opsional — null jika tidak diisi pengguna
   is_smoker: number; // 1 = Ya, 0 = Tidak
   freq_instant_noodle: number; // porsi per minggu
   ak02: number; // hari/minggu aktivitas fisik berat

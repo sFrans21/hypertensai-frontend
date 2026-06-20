@@ -33,7 +33,9 @@ export default function FormPage() {
   }
 
   function validateField(field: FieldDef, raw: string): string | undefined {
-    if (raw === "" || raw === undefined) return "Wajib diisi.";
+    if (raw === "" || raw === undefined) {
+      return field.optional ? undefined : "Wajib diisi.";
+    }
     const num = Number(raw);
     if (!Number.isFinite(num)) return "Masukkan angka yang valid.";
     if (field.min !== undefined && num < field.min)
@@ -71,12 +73,18 @@ export default function FormPage() {
 
   function buildPayload(): AnalyzePayload {
     // Semua nilai dikirim sebagai tipe numerik sesuai kontrak API.
-    const out = {} as Record<FieldKey, number>;
+    const out = {} as Record<FieldKey, number | null>;
     for (const s of FORM_STEPS) {
       for (const f of s.fields) {
-        out[f.key] = Number(values[f.key]);
+        if (f.key === "weight_kg" || f.key === "height_cm") continue;
+        const raw = values[f.key];
+        out[f.key] = raw === "" ? (f.optional ? null : Number(raw)) : Number(raw);
       }
     }
+    // BMI dihitung dari berat (kg) dan tinggi (cm), bukan diinput langsung.
+    const weight = Number(values.weight_kg);
+    const heightM = Number(values.height_cm) / 100;
+    out.bmi = heightM > 0 ? Number((weight / (heightM * heightM)).toFixed(1)) : 0;
     return out as unknown as AnalyzePayload;
   }
 

@@ -76,7 +76,7 @@ function simulateResult(p: AnalyzePayload): StoredResult {
   let score = 0.12;
   if (p.age >= 45) score += 0.18;
   if (p.bmi >= 27) score += 0.15;
-  if (p.waist_cm >= 90) score += 0.1;
+  if (p.waist_cm !== null && p.waist_cm >= 90) score += 0.1;
   if (p.is_smoker === 1) score += 0.1;
   if (p.has_diabetes === 1) score += 0.15;
   score += p.genetic_risk_score * 0.08;

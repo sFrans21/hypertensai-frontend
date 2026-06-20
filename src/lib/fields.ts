@@ -13,7 +13,10 @@ import type { AnalyzePayload } from "./types";
 // skala CES-D), bukan dari PRD, agar label formulir bermakna secara klinis.
 // ============================================================================
 
-export type FieldKey = keyof AnalyzePayload;
+/** Field formulir di luar kontrak API — dipakai untuk menghitung BMI sebelum dikirim. */
+export type ExtraFieldKey = "weight_kg" | "height_cm";
+
+export type FieldKey = keyof AnalyzePayload | ExtraFieldKey;
 
 export interface SelectOption {
   value: number;
@@ -30,6 +33,8 @@ export interface FieldDef {
   min?: number;
   max?: number;
   step?: number;
+  /** Jika true, field boleh dikosongkan (tidak wajib diisi). */
+  optional?: boolean;
   options?: SelectOption[];
 }
 
@@ -78,25 +83,37 @@ export const FORM_STEPS: FormStep[] = [
         ],
       },
       {
-        key: "bmi",
-        label: "Indeks Massa Tubuh (BMI)",
-        code: "bmi",
-        hint: "Berat (kg) ÷ tinggi² (m²)",
+        key: "weight_kg",
+        label: "Berat badan",
+        code: "weight_kg",
+        hint: "Digunakan untuk menghitung BMI",
         kind: "number",
-        unit: "kg/m²",
-        min: 8,
-        max: 70,
+        unit: "kg",
+        min: 20,
+        max: 300,
+        step: 0.1,
+      },
+      {
+        key: "height_cm",
+        label: "Tinggi badan",
+        code: "height_cm",
+        hint: "Digunakan untuk menghitung BMI",
+        kind: "number",
+        unit: "cm",
+        min: 50,
+        max: 250,
         step: 0.1,
       },
       {
         key: "waist_cm",
-        label: "Lingkar pinggang",
+        label: "Lingkar pinggang (opsional)",
         code: "waist_cm",
         kind: "number",
         unit: "cm",
         min: 30,
         max: 250,
         step: 0.1,
+        optional: true,
       },
     ],
   },
