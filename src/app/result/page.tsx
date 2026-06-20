@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { STORAGE_KEY, type StoredResult } from "@/lib/api";
+import XaiChart from "./XaiChart";
 
 type LoadState =
   | { kind: "loading" }
@@ -95,7 +96,7 @@ export default function ResultPage() {
   }
 
   const { result } = state;
-  const { prediction, clinical_narrative } = result.data;
+  const { prediction, clinical_narrative, xai_analysis } = result.data;
   const theme = themeFor(prediction.risk_status);
   const percent = Math.round(prediction.risk_score * 1000) / 10; // 1 desimal
   const isSimulated = result._simulated === true;
@@ -149,6 +150,7 @@ export default function ResultPage() {
         </div>
       </section>
 
+      <XaiChart data={xai_analysis} />
       {/* Clinical Narrative Section */}
       <section className="mt-6">
         <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
@@ -183,8 +185,8 @@ export default function ResultPage() {
       {/* Disclaimer */}
       <p className="mt-8 rounded-xl bg-teal-50 px-4 py-3 text-xs leading-relaxed text-teal-700">
         Hasil ini merupakan <span className="font-semibold">opini kedua</span>{" "}
-        untuk skrining awal dan tidak menggantikan diagnosis dokter. Konsultasikan
-        kondisi Anda dengan tenaga kesehatan profesional.
+        untuk skrining awal dan tidak menggantikan diagnosis dokter.
+        Konsultasikan kondisi Anda dengan tenaga kesehatan profesional.
       </p>
 
       {/* Actions */}

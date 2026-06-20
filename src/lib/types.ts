@@ -31,7 +31,7 @@ export interface Prediction {
 
 export interface AnalyzeData {
   prediction: Prediction;
-  xai_analysis: Record<string, unknown>;
+  xai_analysis: Record<string, number>;
   clinical_narrative: string;
 }
 
