@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -9,18 +9,34 @@ import {
   type FieldDef,
   type FieldKey,
 } from "@/lib/fields";
-import { analyzeRisk, STORAGE_KEY } from "@/lib/api";
+import { analyzeRisk, STORAGE_KEY, FORM_KEY } from "@/lib/api";
 import type { AnalyzePayload } from "@/lib/types";
 
 export default function FormPage() {
   const router = useRouter();
-  const [values, setValues] = useState<Record<FieldKey, string>>(
-    emptyFormValues(),
-  );
+  const [values, setValues] =
+    useState<Record<FieldKey, string>>(emptyFormValues());
   const [stepIndex, setStepIndex] = useState(0);
   const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  // Muat ulang input terakhir (mode edit). Jika kosong, formulir tetap kosong.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(FORM_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as Record<string, string>;
+      setValues((prev) => {
+        const next = { ...prev };
+        for (const k of Object.keys(next) as (keyof typeof next)[]) {
+          if (typeof saved[k] === "string") next[k] = saved[k];
+        }
+        return next;
+      });
+    } catch {
+      /* abaikan data rusak */
+    }
+  }, []);
 
   const step = FORM_STEPS[stepIndex];
   const isLastStep = stepIndex === FORM_STEPS.length - 1;
@@ -71,6 +87,21 @@ export default function FormPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function handleReset() {
+    if (!window.confirm("Hapus semua isian dan mulai dari nol?")) return;
+    setValues(emptyFormValues());
+    setErrors({});
+    setApiError(null);
+    setStepIndex(0);
+    try {
+      localStorage.removeItem(FORM_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* abaikan */
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function buildPayload(): AnalyzePayload {
     // Semua nilai dikirim sebagai tipe numerik sesuai kontrak API.
     const out = {} as Record<FieldKey, number | null>;
@@ -78,13 +109,15 @@ export default function FormPage() {
       for (const f of s.fields) {
         if (f.key === "weight_kg" || f.key === "height_cm") continue;
         const raw = values[f.key];
-        out[f.key] = raw === "" ? (f.optional ? null : Number(raw)) : Number(raw);
+        out[f.key] =
+          raw === "" ? (f.optional ? null : Number(raw)) : Number(raw);
       }
     }
     // BMI dihitung dari berat (kg) dan tinggi (cm), bukan diinput langsung.
     const weight = Number(values.weight_kg);
     const heightM = Number(values.height_cm) / 100;
-    out.bmi = heightM > 0 ? Number((weight / (heightM * heightM)).toFixed(1)) : 0;
+    out.bmi =
+      heightM > 0 ? Number((weight / (heightM * heightM)).toFixed(1)) : 0;
     return out as unknown as AnalyzePayload;
   }
 
@@ -94,6 +127,8 @@ export default function FormPage() {
     setApiError(null);
     try {
       const result = await analyzeRisk(buildPayload());
+      // Simpan input agar bisa diedit lagi nanti.
+      localStorage.setItem(FORM_KEY, JSON.stringify(values));
       // Simpan respons ke LocalStorage dengan key "analysisResult" (sesuai PRD).
       localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
       router.push("/result");
@@ -116,9 +151,18 @@ export default function FormPage() {
           >
             ← Beranda
           </Link>
-          <span className="text-xs font-semibold text-muted">
-            Langkah {stepIndex + 1} dari {FORM_STEPS.length}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted">
+              Langkah {stepIndex + 1} dari {FORM_STEPS.length}
+            </span>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-xs font-semibold text-muted underline-offset-2 transition-colors hover:text-ink hover:underline"
+            >
+              Reset
+            </button>
+          </div>
         </div>
         <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-line">
           <div
@@ -290,7 +334,10 @@ function Field({
         </p>
       )}
       {error && (
-        <p id={`${inputId}-error`} className="mt-1.5 text-xs font-medium text-red-600">
+        <p
+          id={`${inputId}-error`}
+          className="mt-1.5 text-xs font-medium text-red-600"
+        >
           {error}
         </p>
       )}

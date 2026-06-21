@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { FORM_KEY, STORAGE_KEY } from "@/lib/api";
 
 export default function HomePage() {
   return (
@@ -68,7 +70,15 @@ export default function HomePage() {
       {/* CTA */}
       <Link
         href="/form"
-        className="mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-teal-500 text-base font-semibold text-white shadow-card transition-colors hover:bg-teal-600 active:bg-teal-700"
+        onClick={() => {
+          try {
+            localStorage.removeItem(FORM_KEY);
+            localStorage.removeItem(STORAGE_KEY);
+          } catch {
+            /* abaikan */
+          }
+        }}
+        className="flex h-14 w-full items-center justify-center rounded-2xl bg-teal-500 text-base font-semibold text-white shadow-card transition-colors hover:bg-teal-600 active:bg-teal-700 lg:inline-flex lg:w-auto lg:px-12"
       >
         Mulai Deteksi Risiko
       </Link>

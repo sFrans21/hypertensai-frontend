@@ -4,6 +4,7 @@ const ENDPOINT_PATH = "/api/v1/analyze";
 
 /** Kunci LocalStorage yang dipakai untuk menyimpan hasil analisis (sesuai PRD). */
 export const STORAGE_KEY = "analysisResult";
+export const FORM_KEY = "analysisInput";
 
 /** Hasil yang disimpan ke LocalStorage: respons API + penanda apakah simulasi. */
 export interface StoredResult extends AnalyzeResponse {
@@ -64,7 +65,9 @@ export async function analyzeRisk(
         "Tidak dapat terhubung ke server analisis. Pastikan backend berjalan dan NEXT_PUBLIC_API_URL benar.",
       );
     }
-    throw err instanceof Error ? err : new Error("Terjadi kesalahan tak terduga.");
+    throw err instanceof Error
+      ? err
+      : new Error("Terjadi kesalahan tak terduga.");
   }
 }
 

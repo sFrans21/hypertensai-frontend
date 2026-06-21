@@ -192,13 +192,10 @@ export default function ResultPage() {
       {/* Actions */}
       <button
         type="button"
-        onClick={() => {
-          localStorage.removeItem(STORAGE_KEY);
-          router.push("/form");
-        }}
-        className="mt-4 flex h-14 w-full items-center justify-center rounded-2xl bg-teal-500 text-base font-semibold text-white shadow-card transition-colors hover:bg-teal-600 active:bg-teal-700"
+        onClick={() => router.push("/form")}
+        className="mt-4 flex h-14 w-full items-center justify-center rounded-2xl bg-teal-500 text-base font-semibold text-white shadow-card transition-colors hover:bg-teal-600 active:bg-teal-700 lg:w-auto lg:px-10"
       >
-        Cek Ulang Risiko
+        Edit Data &amp; Hitung Ulang
       </button>
     </main>
   );
