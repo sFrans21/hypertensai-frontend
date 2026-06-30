@@ -8,20 +8,12 @@
 export interface AnalyzePayload {
   age: number;
   is_female: number; // 1 = Perempuan, 0 = Laki-laki
-  bmi: number;
-  waist_cm: number | null; // opsional — null jika tidak diisi pengguna
+  bmi: number; // dihitung dari weight_kg & height_cm
   is_smoker: number; // 1 = Ya, 0 = Tidak
-  freq_instant_noodle: number; // porsi per minggu
-  ak02: number; // hari/minggu aktivitas fisik berat
-  ak05: number; // hari/minggu aktivitas fisik sedang
-  ak07: number; // total durasi aktivitas (menit/hari)
   has_diabetes: number; // 1 = Ya, 0 = Tidak
-  genetic_risk_score: number; // skala 0-2
-  ps_A: number; // CES-D afektif (1-3)
-  ps_B: number; // CES-D kognitif (1-3)
-  ps_C: number; // CES-D afektif depresif (1-3)
-  ps_E: number; // CES-D afektif positif / reverse (1-3)
-  ps_F: number; // CES-D kecemasan (1-3)
+  has_high_cholesterol: number; // 1 = Ya, 0 = Tidak
+  sleep_quality: number; // 1–5 (1 = sangat buruk, 5 = sangat baik)
+  sleep_disturbance: number; // 1–5 (1 = jarang, 5 = selalu)
 }
 
 export interface Prediction {

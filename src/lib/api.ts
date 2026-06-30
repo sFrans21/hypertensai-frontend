@@ -79,14 +79,11 @@ function simulateResult(p: AnalyzePayload): StoredResult {
   let score = 0.12;
   if (p.age >= 45) score += 0.18;
   if (p.bmi >= 27) score += 0.15;
-  if (p.waist_cm !== null && p.waist_cm >= 90) score += 0.1;
   if (p.is_smoker === 1) score += 0.1;
   if (p.has_diabetes === 1) score += 0.15;
-  score += p.genetic_risk_score * 0.08;
-  score += Math.max(0, p.freq_instant_noodle - 3) * 0.01;
-  if (p.ak02 + p.ak05 === 0) score += 0.06;
-  const psychoLoad = p.ps_A + p.ps_B + p.ps_C + p.ps_F - p.ps_E;
-  score += Math.max(0, psychoLoad - 6) * 0.015;
+  if (p.has_high_cholesterol === 1) score += 0.12;
+  if (p.sleep_quality <= 2) score += 0.08;
+  if (p.sleep_disturbance >= 4) score += 0.06;
 
   const risk_score = Math.min(0.97, Math.max(0.03, score));
   const high = risk_score >= 0.5;
