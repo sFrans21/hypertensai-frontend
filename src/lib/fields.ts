@@ -137,7 +137,7 @@ export const FORM_STEPS: FormStep[] = [
       {
         key: "has_high_cholesterol",
         label:
-          "Apakah Dokter/Paramedis/Perawat/Bidan pernah mengatakan bahwa Anda memiliki penyakit kolesterol tinggi?",
+          "Apakah Dokter/Paramedis/Perawat/Bidan pernah mengatakan bahwa Anda memiliki kolesterol tinggi?",
         code: "has_high_cholesterol",
         kind: "select",
         options: yesNo,
