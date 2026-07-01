@@ -18,8 +18,8 @@ export default function HomePage() {
           Hypertens<span className="text-teal-500">AI</span>
         </h1>
         <p className="mt-3 text-base leading-relaxed text-muted">
-          Kenali estimasi risiko hipertensi Anda dari data klinis dan gaya hidup,
-          dijelaskan dalam bahasa yang mudah dipahami.
+          Kenali estimasi risiko hipertensi Anda dari data klinis dan gaya
+          hidup, dijelaskan dalam bahasa yang mudah dipahami.
         </p>
       </div>
 
@@ -56,8 +56,11 @@ export default function HomePage() {
         {/* How it works */}
         <ol className="mt-8 space-y-3">
           {[
-            { n: "1", t: "Isi 16 data klinis & gaya hidup" },
-            { n: "2", t: "Sistem menganalisis dengan model XGBoost" },
+            { n: "1", t: "Isi data non-invasif & gaya hidup" },
+            {
+              n: "2",
+              t: "Sistem menganalisis skor risiko dengan model machine learning",
+            },
             { n: "3", t: "Terima skor risiko & penjelasan dari AI" },
           ].map((s) => (
             <li key={s.n} className="flex items-center gap-3">
