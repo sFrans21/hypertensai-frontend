@@ -5,7 +5,7 @@ import type { AnalyzePayload } from "./types";
 //
 // `key`     -> nama kunci JSON yang dikirim ke API (TIDAK BOLEH diubah).
 // `label`   -> teks ramah-pengguna dalam Bahasa Indonesia.
-// `code`    -> kode teknis variabel (ditampilkan sebagai helper kecil).
+// `code`    -> kode teknis variabel (dokumentasi internal; tidak ditampilkan).
 // `kind`    -> "number" (input angka) atau "select" (dropdown).
 // `options` -> daftar pilihan untuk dropdown.
 //
@@ -74,7 +74,7 @@ export const FORM_STEPS: FormStep[] = [
     fields: [
       {
         key: "age",
-        label: "Usia",
+        label: "Berapa usia Anda?",
         code: "age",
         kind: "number",
         unit: "tahun",
@@ -84,7 +84,7 @@ export const FORM_STEPS: FormStep[] = [
       },
       {
         key: "is_female",
-        label: "Jenis kelamin",
+        label: "Apa jenis kelamin Anda?",
         code: "is_female",
         kind: "select",
         options: [
@@ -94,9 +94,8 @@ export const FORM_STEPS: FormStep[] = [
       },
       {
         key: "weight_kg",
-        label: "Berat badan",
+        label: "Berapa berat badan Anda?",
         code: "weight_kg",
-        hint: "Digunakan untuk menghitung BMI",
         kind: "number",
         unit: "kg",
         min: 20,
@@ -105,9 +104,8 @@ export const FORM_STEPS: FormStep[] = [
       },
       {
         key: "height_cm",
-        label: "Tinggi badan",
+        label: "Berapa tinggi badan Anda?",
         code: "height_cm",
-        hint: "Digunakan untuk menghitung BMI",
         kind: "number",
         unit: "cm",
         min: 50,
@@ -123,25 +121,24 @@ export const FORM_STEPS: FormStep[] = [
     fields: [
       {
         key: "is_smoker",
-        label: "Status merokok",
+        label: "Apakah Anda pernah mempunyai kebiasaan menghisap rokok?",
         code: "is_smoker",
-        hint: "Apakah Anda merokok?",
         kind: "select",
         options: yesNo,
       },
       {
         key: "has_diabetes",
-        label: "Riwayat diabetes",
+        label:
+          "Apakah Dokter/Paramedis/Perawat/Bidan pernah mengatakan bahwa Anda memiliki penyakit diabetes?",
         code: "has_diabetes",
-        hint: "Pernah didiagnosis diabetes?",
         kind: "select",
         options: yesNo,
       },
       {
         key: "has_high_cholesterol",
-        label: "Riwayat kolesterol tinggi",
+        label:
+          "Apakah Dokter/Paramedis/Perawat/Bidan pernah mengatakan bahwa Anda memiliki penyakit kolesterol tinggi?",
         code: "has_high_cholesterol",
-        hint: "Pernah didiagnosis kolesterol tinggi?",
         kind: "select",
         options: yesNo,
       },
@@ -154,17 +151,16 @@ export const FORM_STEPS: FormStep[] = [
     fields: [
       {
         key: "sleep_quality",
-        label: "Kualitas tidur",
+        label: "Dalam 1 minggu terakhir, kualitas tidur Anda…",
         code: "sleep_quality",
-        hint: "Seberapa baik kualitas tidur Anda secara keseluruhan?",
         kind: "select",
         options: sleepQuality,
       },
       {
         key: "sleep_disturbance",
-        label: "Gangguan tidur",
+        label:
+          "Seberapa sering Anda mengalami gangguan tidur (sulit tidur atau sering terbangun)?",
         code: "sleep_disturbance",
-        hint: "Seberapa sering Anda mengalami gangguan tidur (sulit tidur, sering terbangun)?",
         kind: "select",
         options: sleepDisturbance,
       },

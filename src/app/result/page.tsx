@@ -102,7 +102,7 @@ export default function ResultPage() {
   const isSimulated = result._simulated === true;
 
   return (
-    <main className="flex flex-1 flex-col px-6 pb-10 pt-8">
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-10 pt-8 lg:max-w-5xl">
       <header className="flex items-center justify-between">
         <Link
           href="/"
@@ -122,6 +122,10 @@ export default function ResultPage() {
         </div>
       )}
 
+      {/* Desktop: 2 kolom — kiri (status + faktor risiko), kanan (penjelasan). Mobile: menumpuk. */}
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+        {/* Kolom kiri */}
+        <div>
       {/* Hero Section: status risiko */}
       <section
         className={`mt-5 animate-fade-up rounded-3xl ${theme.card} px-6 py-8 text-white shadow-float`}
@@ -151,8 +155,12 @@ export default function ResultPage() {
       </section>
 
       <XaiChart data={xai_analysis} />
+        </div>
+
+        {/* Kolom kanan */}
+        <div>
       {/* Clinical Narrative Section */}
-      <section className="mt-6">
+      <section className="mt-6 lg:mt-5">
         <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
           Penjelasan Klinis
         </h2>
@@ -179,8 +187,10 @@ export default function ResultPage() {
           </div>
         </div>
       </section>
+        </div>
+      </div>
 
-      <div className="flex-1" />
+      <div className="flex-1 lg:hidden" />
 
       {/* Disclaimer */}
       <p className="mt-8 rounded-xl bg-teal-50 px-4 py-3 text-xs leading-relaxed text-teal-700">

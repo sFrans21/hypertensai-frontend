@@ -186,6 +186,9 @@ const FEATURE_LABELS: Record<string, string> = {
   ak05: "Aktivitas sedang",
   ak07: "Durasi aktivitas",
   has_diabetes: "Diabetes",
+  has_high_cholesterol: "Kolesterol tinggi",
+  sleep_quality: "Kualitas tidur",
+  sleep_disturbance: "Gangguan tidur",
   genetic_risk_score: "Riwayat keluarga",
   ps_A: "Mudah terganggu",
   ps_B: "Sulit konsentrasi",
@@ -226,7 +229,7 @@ export default function XaiChart({ data }: { data: Record<string, number> }) {
     <section className="mt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
-          Kontribusi Faktor Risiko
+          Pengaruh Faktor Risiko
         </h2>
         <div className="inline-flex rounded-lg border border-line bg-surface p-0.5">
           <button
@@ -364,14 +367,67 @@ function BarView({ data }: { data: Factor[] }) {
 //   );
 // }
 
+const GROUP_THRESHOLD = 5; // fitur dengan kontribusi < 5% digabung jadi "Lainnya"
+
+interface PieSlice {
+  key: string;
+  label: string;
+  percent: number;
+  color: string;
+  members?: Factor[]; // terisi jika irisan ini kelompok "Lainnya"
+}
+
+// Khusus diagram lingkaran: fitur < 5% dikelompokkan menjadi "Lainnya",
+// dipisah menurut arah/warna (merah = menaikkan, hijau = menurunkan risiko).
+function groupForPie(data: Factor[]): PieSlice[] {
+  const major: PieSlice[] = [];
+  const minorUp: Factor[] = [];
+  const minorDown: Factor[] = [];
+
+  for (const d of data) {
+    if (d.percent >= GROUP_THRESHOLD) {
+      major.push({ key: d.key, label: d.label, percent: d.percent, color: d.color });
+    } else if (d.increases) {
+      minorUp.push(d);
+    } else {
+      minorDown.push(d);
+    }
+  }
+
+  const sum = (arr: Factor[]) => arr.reduce((s, d) => s + d.percent, 0);
+  const groups: PieSlice[] = [];
+  if (minorUp.length > 0) {
+    groups.push({
+      key: "__others_up",
+      label: "Lainnya (meningkatkan risiko)",
+      percent: sum(minorUp),
+      color: UP,
+      members: minorUp,
+    });
+  }
+  if (minorDown.length > 0) {
+    groups.push({
+      key: "__others_down",
+      label: "Lainnya (menurunkan risiko)",
+      percent: sum(minorDown),
+      color: DOWN,
+      members: minorDown,
+    });
+  }
+
+  // Irisan besar tetap urut dari terbesar; kelompok "Lainnya" diletakkan di akhir.
+  return [...major, ...groups];
+}
+
 function PieView({ data }: { data: Factor[] }) {
+  const pieData = groupForPie(data);
   const R = 70;
   const C = 2 * Math.PI * R;
   const GAP = 1.2;
   let acc = 0; // akumulasi panjang arc (untuk posisi irisan)
   let accPct = 0; // akumulasi persen (untuk posisi nomor)
 
-  const slices = data.map((d, i) => {
+  const slices = pieData.map((d, i) => {
     const arc = (d.percent / 100) * C;
     const dash = Math.max(arc - GAP, 0);
     const offset = -acc;
@@ -419,22 +475,44 @@ function PieView({ data }: { data: Factor[] }) {
 
       <ul className="w-full space-y-2">
         {slices.map((s) => (
-          <li
-            key={s.key}
-            className="flex items-center justify-between gap-4 text-sm"
-          >
-            <span className="flex items-center gap-2">
-              <span
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[0.7rem] font-bold text-white"
-                style={{ backgroundColor: s.color }}
-              >
-                {s.num}
+          <li key={s.key}>
+            <div className="flex items-center justify-between gap-4 text-sm">
+              <span className="flex items-center gap-2">
+                <span
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[0.7rem] font-bold text-white"
+                  style={{ backgroundColor: s.color }}
+                >
+                  {s.num}
+                </span>
+                <span className="text-ink">{s.label}</span>
               </span>
-              <span className="text-ink">{s.label}</span>
-            </span>
-            <span className="font-bold" style={{ color: s.color }}>
-              {s.percent.toFixed(1)}%
-            </span>
+              <span className="font-bold" style={{ color: s.color }}>
+                {s.percent.toFixed(1)}%
+              </span>
+            </div>
+
+            {/* Rincian anggota kelompok "Lainnya" */}
+            {s.members && (
+              <ul className="ml-7 mt-2 space-y-1.5 border-l border-line pl-3">
+                {s.members.map((m) => (
+                  <li
+                    key={m.key}
+                    className="flex items-center justify-between gap-3 text-xs"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="inline-block h-2.5 w-2.5 shrink-0 rounded-sm"
+                        style={{ backgroundColor: m.color }}
+                      />
+                      <span className="text-muted">{m.label}</span>
+                    </span>
+                    <span className="font-semibold" style={{ color: m.color }}>
+                      {m.percent.toFixed(1)}%
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ul>

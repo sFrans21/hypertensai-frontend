@@ -29,8 +29,9 @@ export default function RootLayout({
   return (
     <html lang="id" className={jakarta.variable}>
       <body className="font-sans antialiased">
-        {/* Mobile-first: konten dibatasi max-w-md dan dipusatkan di layar desktop */}
-        <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-canvas">
+        {/* Responsif: latar mengisi penuh viewport; lebar konten diatur per-halaman
+            (mobile-first lalu melebar di tablet/desktop). */}
+        <div className="flex min-h-screen w-full flex-col bg-canvas">
           {children}
         </div>
       </body>

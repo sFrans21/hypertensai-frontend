@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -141,7 +141,7 @@ export default function FormPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col px-6 pb-8 pt-8">
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-8 pt-8 lg:max-w-2xl">
       {/* Header + progress */}
       <header>
         <div className="flex items-center justify-between">
@@ -179,8 +179,8 @@ export default function FormPage() {
           {step.subtitle}
         </p>
 
-        {/* Fields */}
-        <div className="mt-6 space-y-5">
+        {/* Pertanyaan — berjajar vertikal (satu kolom) */}
+        <div className="mt-6 space-y-6">
           {step.fields.map((field) => (
             <Field
               key={field.key}
@@ -259,12 +259,7 @@ function Field({
   onChange: (val: string) => void;
 }) {
   const inputId = `field-${field.key}`;
-  const describedBy = useMemo(() => {
-    const ids: string[] = [];
-    if (field.hint) ids.push(`${inputId}-hint`);
-    if (error) ids.push(`${inputId}-error`);
-    return ids.join(" ") || undefined;
-  }, [field.hint, error, inputId]);
+  const describedBy = error ? `${inputId}-error` : undefined;
 
   const base =
     "mt-2 w-full rounded-xl border bg-surface px-4 text-base text-ink shadow-sm transition-colors focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100";
@@ -274,12 +269,9 @@ function Field({
     <div>
       <label
         htmlFor={inputId}
-        className="flex items-baseline justify-between gap-2"
+        className="block text-base font-semibold leading-snug text-ink"
       >
-        <span className="text-sm font-semibold text-ink">{field.label}</span>
-        <span className="font-mono text-[0.65rem] uppercase tracking-wide text-muted/70">
-          {field.code}
-        </span>
+        {field.label}
       </label>
 
       {field.kind === "select" ? (
@@ -328,11 +320,6 @@ function Field({
         </div>
       )}
 
-      {field.hint && !error && (
-        <p id={`${inputId}-hint`} className="mt-1.5 text-xs text-muted">
-          {field.hint}
-        </p>
-      )}
       {error && (
         <p
           id={`${inputId}-error`}
