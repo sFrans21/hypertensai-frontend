@@ -56,7 +56,7 @@ export default function HomePage() {
         {/* How it works */}
         <ol className="mt-8 space-y-3">
           {[
-            { n: "1", t: "Isi data non-invasif & gaya hidup" },
+            { n: "1", t: "Isi kuesioner demografis dan gaya hidup" },
             {
               n: "2",
               t: "Sistem menganalisis skor risiko dengan model machine learning",
