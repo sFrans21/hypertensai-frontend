@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { STORAGE_KEY, type StoredResult } from "@/lib/api";
+import { STORAGE_KEY, FORM_KEY, type StoredResult } from "@/lib/api";
 import XaiChart from "./XaiChart";
 
 type LoadState =
@@ -50,8 +50,17 @@ function themeFor(status: string): RiskTheme {
 export default function ResultPage() {
   const router = useRouter();
   const [state, setState] = useState<LoadState>({ kind: "loading" });
+  // Nilai input yang pengguna masukkan (untuk ditampilkan di samping kontribusi faktor).
+  const [inputs, setInputs] = useState<Record<string, string> | null>(null);
 
   useEffect(() => {
+    try {
+      const rawInput = localStorage.getItem(FORM_KEY);
+      if (rawInput) setInputs(JSON.parse(rawInput) as Record<string, string>);
+    } catch {
+      /* abaikan input rusak */
+    }
+
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
@@ -154,7 +163,7 @@ export default function ResultPage() {
         </div>
       </section>
 
-      <XaiChart data={xai_analysis} />
+      <XaiChart data={xai_analysis} inputs={inputs ?? undefined} />
         </div>
 
         {/* Kolom kanan */}

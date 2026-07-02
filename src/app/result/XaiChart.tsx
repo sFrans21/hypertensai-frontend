@@ -175,6 +175,8 @@
 
 import { useState } from "react";
 
+import { displayInputValue } from "@/lib/fields";
+
 const FEATURE_LABELS: Record<string, string> = {
   age: "Usia",
   is_female: "Jenis kelamin",
@@ -206,9 +208,16 @@ interface Factor {
   percent: number; // share magnitudo (0-100)
   increases: boolean;
   color: string;
+  input: string | null; // nilai input pengguna untuk fitur ini
 }
 
-export default function XaiChart({ data }: { data: Record<string, number> }) {
+export default function XaiChart({
+  data,
+  inputs,
+}: {
+  data: Record<string, number>;
+  inputs?: Record<string, string>;
+}) {
   const [view, setView] = useState<"bar" | "pie">("bar");
 
   const entries = Object.entries(data ?? {});
@@ -222,6 +231,7 @@ export default function XaiChart({ data }: { data: Record<string, number> }) {
       percent: (Math.abs(value) / total) * 100,
       increases: value > 0,
       color: value > 0 ? UP : DOWN,
+      input: inputs ? displayInputValue(key, inputs) : null,
     }))
     .sort((a, b) => b.percent - a.percent);
 
@@ -294,10 +304,17 @@ function BarView({ data }: { data: Factor[] }) {
     <div className="space-y-3">
       {data.map((d) => (
         <div key={d.key}>
-          <div className="flex items-baseline justify-between text-sm">
+          <div className="flex items-baseline justify-between gap-2 text-sm">
             <span className="font-medium text-ink">{d.label}</span>
-            <span className="font-bold" style={{ color: d.color }}>
-              {d.percent.toFixed(1)}%
+            <span className="flex items-baseline gap-2">
+              {d.input && (
+                <span className="text-xs font-normal text-muted">
+                  {d.input}
+                </span>
+              )}
+              <span className="font-bold" style={{ color: d.color }}>
+                {d.percent.toFixed(1)}%
+              </span>
             </span>
           </div>
           <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-line">
@@ -374,6 +391,7 @@ interface PieSlice {
   label: string;
   percent: number;
   color: string;
+  input?: string | null; // nilai input pengguna (hanya untuk irisan tunggal)
   members?: Factor[]; // terisi jika irisan ini kelompok "Lainnya"
 }
 
@@ -386,7 +404,13 @@ function groupForPie(data: Factor[]): PieSlice[] {
 
   for (const d of data) {
     if (d.percent >= GROUP_THRESHOLD) {
-      major.push({ key: d.key, label: d.label, percent: d.percent, color: d.color });
+      major.push({
+        key: d.key,
+        label: d.label,
+        percent: d.percent,
+        color: d.color,
+        input: d.input,
+      });
     } else if (d.increases) {
       minorUp.push(d);
     } else {
@@ -486,8 +510,15 @@ function PieView({ data }: { data: Factor[] }) {
                 </span>
                 <span className="text-ink">{s.label}</span>
               </span>
-              <span className="font-bold" style={{ color: s.color }}>
-                {s.percent.toFixed(1)}%
+              <span className="flex items-baseline gap-2">
+                {s.input && (
+                  <span className="text-xs font-normal text-muted">
+                    {s.input}
+                  </span>
+                )}
+                <span className="font-bold" style={{ color: s.color }}>
+                  {s.percent.toFixed(1)}%
+                </span>
               </span>
             </div>
 
@@ -506,8 +537,18 @@ function PieView({ data }: { data: Factor[] }) {
                       />
                       <span className="text-muted">{m.label}</span>
                     </span>
-                    <span className="font-semibold" style={{ color: m.color }}>
-                      {m.percent.toFixed(1)}%
+                    <span className="flex items-baseline gap-2">
+                      {m.input && (
+                        <span className="text-[0.7rem] font-normal text-muted">
+                          {m.input}
+                        </span>
+                      )}
+                      <span
+                        className="font-semibold"
+                        style={{ color: m.color }}
+                      >
+                        {m.percent.toFixed(1)}%
+                      </span>
                     </span>
                   </li>
                 ))}

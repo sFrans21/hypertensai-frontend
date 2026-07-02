@@ -181,3 +181,34 @@ export function emptyFormValues(): Record<FieldKey, string> {
     {} as Record<FieldKey, string>,
   );
 }
+
+/**
+ * Nilai input pengguna untuk sebuah fitur model, diformat untuk ditampilkan
+ * di hasil analisis (mis. "30 tahun", "Laki-laki", "Cukup").
+ * `bmi` dihitung dari berat & tinggi karena tidak diinput langsung.
+ * Mengembalikan null jika data tidak tersedia.
+ */
+export function displayInputValue(
+  featureKey: string,
+  values: Record<string, string>,
+): string | null {
+  if (featureKey === "bmi") {
+    const weight = Number(values.weight_kg);
+    const heightM = Number(values.height_cm) / 100;
+    if (weight > 0 && heightM > 0) return (weight / (heightM * heightM)).toFixed(1);
+    return null;
+  }
+
+  const field = ALL_FIELDS.find((f) => f.key === featureKey);
+  const raw = values[featureKey];
+  if (!field || raw === undefined || raw === "") return null;
+
+  if (field.kind === "select" && field.options) {
+    const opt = field.options.find((o) => String(o.value) === raw);
+    // Buang awalan skala numerik, mis. "3 — Cukup" -> "Cukup".
+    if (opt) return opt.label.replace(/^\d+\s*—\s*/, "").trim();
+    return raw;
+  }
+
+  return field.unit ? `${raw} ${field.unit}` : raw;
+}
