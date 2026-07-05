@@ -1,7 +1,7 @@
 # HypertensAI — Frontend
 
-Antarmuka web responsif (mobile-first) untuk **Sistem Prediksi Risiko Hipertensi
-berbasis Explainable AI & Large Language Model**. Aplikasi mengirim 16 parameter
+Antarmuka web responsif untuk **Sistem Prediksi Risiko Hipertensi
+berbasis Explainable AI & Large Language Model**. Aplikasi mengirim 8 parameter
 klinis & gaya hidup ke backend FastAPI, lalu menampilkan skor risiko dan narasi
 medis dari LLM.
 
@@ -27,9 +27,9 @@ Buka http://localhost:3000
 
 ### Variabel lingkungan
 
-| Variabel                | Keterangan                                                            |
-| ----------------------- | --------------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`   | URL dasar backend FastAPI (mis. `http://localhost:8000`).             |
+| Variabel                | Keterangan                                                             |
+| ----------------------- | ---------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`   | URL dasar backend FastAPI (mis. `http://localhost:8000`).              |
 | `NEXT_PUBLIC_DEMO_MODE` | `true` untuk hasil **simulasi** tanpa backend (untuk demo/presentasi). |
 
 > **Mode Demo:** jika `NEXT_PUBLIC_DEMO_MODE=true`, aplikasi akan menampilkan
@@ -59,11 +59,22 @@ src/
 
 ```json
 {
-  "age": 38, "is_female": 0, "bmi": 26.4, "waist_cm": 172,
-  "is_smoker": 0, "freq_instant_noodle": 2,
-  "ak02": 0, "ak05": 2, "ak07": 120,
-  "has_diabetes": 0, "genetic_risk_score": 1,
-  "ps_A": 2, "ps_B": 2, "ps_C": 1, "ps_E": 2, "ps_F": 2
+  "age": 38,
+  "is_female": 0,
+  "bmi": 26.4,
+  "waist_cm": 172,
+  "is_smoker": 0,
+  "freq_instant_noodle": 2,
+  "ak02": 0,
+  "ak05": 2,
+  "ak07": 120,
+  "has_diabetes": 0,
+  "genetic_risk_score": 1,
+  "ps_A": 2,
+  "ps_B": 2,
+  "ps_C": 1,
+  "ps_E": 2,
+  "ps_F": 2
 }
 ```
 
@@ -97,7 +108,7 @@ Aturan warna kartu hasil: `Low Risk` → hijau, `High Risk` → merah, kategori 
 
 - Label formulir diturunkan dari dokumen Tugas Akhir (sumber data IFLS-5 & skala
   CES-D) agar bermakna klinis; **nama kunci JSON tetap persis** sesuai kontrak.
-- Formulir dibuat dalam bentuk **wizard 4 langkah** dengan validasi per langkah,
+- Formulir dibuat dalam bentuk **wizard 3 langkah** dengan validasi per langkah,
   sesuai kebutuhan "Wizard Form" pada PRD.
 - Out of scope (sesuai PRD): autentikasi, penyimpanan riwayat ke database, dan
   plot SHAP — penjelasan XAI didelegasikan ke narasi LLM.
