@@ -44,8 +44,10 @@ src/
 ├─ app/
 │  ├─ layout.tsx        Root layout (mobile constraint max-w-md)
 │  ├─ page.tsx          Landing page
-│  ├─ form/page.tsx     Wizard formulir 16 input (4 langkah)
-│  ├─ result/page.tsx   Halaman hasil (status, probabilitas, narasi)
+│  ├─ form/page.tsx     Wizard formulir 3 langkah (9 input → 8 fitur API)
+│  ├─ result/
+│  │  ├─ page.tsx        Halaman hasil (status, probabilitas, faktor risiko, narasi)
+│  │  └─ XaiChart.tsx    Bar chart kontribusi SHAP per faktor
 │  └─ globals.css
 └─ lib/
    ├─ types.ts          Tipe kontrak API
@@ -55,41 +57,45 @@ src/
 
 ## Kontrak API
 
-**Request** — `POST {NEXT_PUBLIC_API_URL}/api/v1/analyze` (JSON numerik):
+**Request** — `POST {NEXT_PUBLIC_API_URL}/api/v1/analyze` (JSON numerik, **8 fitur**):
 
 ```json
 {
-  "age": 38,
+  "age": 45,
   "is_female": 0,
   "bmi": 26.4,
-  "waist_cm": 172,
-  "is_smoker": 0,
-  "freq_instant_noodle": 2,
-  "ak02": 0,
-  "ak05": 2,
-  "ak07": 120,
+  "is_smoker": 1,
   "has_diabetes": 0,
-  "genetic_risk_score": 1,
-  "ps_A": 2,
-  "ps_B": 2,
-  "ps_C": 1,
-  "ps_E": 2,
-  "ps_F": 2
+  "has_high_cholesterol": 1,
+  "sleep_quality": 2,
+  "sleep_disturbance": 1
 }
 ```
 
-**Response** — aplikasi merender `data.prediction` dan `data.clinical_narrative`:
+> `sleep_quality` mengikuti skala mentah IFLS-5 `tdr01`: **1 = kualitas terbaik … 5 = terburuk**
+> (nilai tinggi = tidur makin buruk = risiko naik). `bmi` dihitung di frontend dari berat & tinggi.
+
+**Response** — aplikasi merender `data.prediction`, `data.xai_analysis`, dan
+`data.clinical_narrative`:
 
 ```json
 {
   "status": "success",
   "data": {
     "prediction": { "risk_score": 0.3666, "risk_status": "Low Risk" },
-    "xai_analysis": {},
+    "xai_analysis": {
+      "bmi": -0.2666,
+      "has_high_cholesterol": 0.2456,
+      "has_diabetes": 0.1768
+    },
     "clinical_narrative": "Teks narasi medis berbahasa Indonesia…"
   }
 }
 ```
+
+> `xai_analysis` berisi nilai **SHAP bertanda** per fitur (positif = menaikkan
+> risiko, negatif = menurunkan). `XaiChart` merender share `|SHAP|`-nya sebagai bar,
+> dengan warna dari tanda nilai (merah = naik, hijau = turun).
 
 Aturan warna kartu hasil: `Low Risk` → hijau, `High Risk` → merah, kategori lain
 → kuning.
@@ -106,9 +112,10 @@ Aturan warna kartu hasil: `Low Risk` → hijau, `High Risk` → merah, kategori 
 
 ## Catatan implementasi
 
-- Label formulir diturunkan dari dokumen Tugas Akhir (sumber data IFLS-5 & skala
-  CES-D) agar bermakna klinis; **nama kunci JSON tetap persis** sesuai kontrak.
+- Label formulir diturunkan dari dokumen Tugas Akhir (sumber data IFLS-5) agar
+  bermakna klinis; **nama kunci JSON tetap persis** sesuai kontrak.
 - Formulir dibuat dalam bentuk **wizard 3 langkah** dengan validasi per langkah,
   sesuai kebutuhan "Wizard Form" pada PRD.
-- Out of scope (sesuai PRD): autentikasi, penyimpanan riwayat ke database, dan
-  plot SHAP — penjelasan XAI didelegasikan ke narasi LLM.
+- Penjelasan XAI ditampilkan **dua lapis**: bar chart kontribusi SHAP
+  (`XaiChart`) + narasi LLM berbahasa alami.
+- Out of scope (sesuai PRD): autentikasi dan penyimpanan riwayat ke database.

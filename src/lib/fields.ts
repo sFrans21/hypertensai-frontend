@@ -50,12 +50,16 @@ const yesNo: SelectOption[] = [
   { value: 1, label: "Ya" },
 ];
 
+// Skala IFLS-5 `tdr01` (PSQI, tdrtype=2): 1 = kualitas terbaik ... 5 = terburuk.
+// Model dilatih pada skala mentah ini (nilai tinggi = tidur makin buruk = risiko
+// hipertensi makin tinggi). Label WAJIB mengikuti arah tersebut, jika terbalik
+// maka "Sangat buruk" justru terkirim sebagai nilai 1 dan SHAP salah arah.
 const sleepQuality: SelectOption[] = [
-  { value: 1, label: "1 — Sangat buruk" },
-  { value: 2, label: "2 — Buruk" },
+  { value: 1, label: "1 — Sangat baik" },
+  { value: 2, label: "2 — Baik" },
   { value: 3, label: "3 — Cukup" },
-  { value: 4, label: "4 — Baik" },
-  { value: 5, label: "5 — Sangat baik" },
+  { value: 4, label: "4 — Buruk" },
+  { value: 5, label: "5 — Sangat buruk" },
 ];
 
 const sleepDisturbance: SelectOption[] = [
@@ -151,7 +155,8 @@ export const FORM_STEPS: FormStep[] = [
     fields: [
       {
         key: "sleep_quality",
-        label: "Dalam 1 minggu terakhir, kualitas tidur Anda…",
+        label:
+          "Dalam 1 minggu terakhir, bagaimana Anda menilai kualitas tidur Anda?",
         code: "sleep_quality",
         kind: "select",
         options: sleepQuality,
@@ -159,7 +164,7 @@ export const FORM_STEPS: FormStep[] = [
       {
         key: "sleep_disturbance",
         label:
-          "Seberapa sering Anda mengalami gangguan tidur (sulit tidur atau sering terbangun)?",
+          "Dalam satu minggu terakhir, seberapa sering Anda mengalami gangguan tidur (sulit tidur atau sering terbangun)?",
         code: "sleep_disturbance",
         kind: "select",
         options: sleepDisturbance,
@@ -195,7 +200,8 @@ export function displayInputValue(
   if (featureKey === "bmi") {
     const weight = Number(values.weight_kg);
     const heightM = Number(values.height_cm) / 100;
-    if (weight > 0 && heightM > 0) return (weight / (heightM * heightM)).toFixed(1);
+    if (weight > 0 && heightM > 0)
+      return (weight / (heightM * heightM)).toFixed(1);
     return null;
   }
 

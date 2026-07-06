@@ -82,7 +82,7 @@ function simulateResult(p: AnalyzePayload): StoredResult {
   if (p.is_smoker === 1) score += 0.1;
   if (p.has_diabetes === 1) score += 0.15;
   if (p.has_high_cholesterol === 1) score += 0.12;
-  if (p.sleep_quality <= 2) score += 0.08;
+  if (p.sleep_quality >= 4) score += 0.08; // skala IFLS: nilai tinggi = tidur buruk
   if (p.sleep_disturbance >= 4) score += 0.06;
 
   const risk_score = Math.min(0.97, Math.max(0.03, score));

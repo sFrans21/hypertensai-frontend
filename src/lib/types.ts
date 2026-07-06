@@ -12,7 +12,7 @@ export interface AnalyzePayload {
   is_smoker: number; // 1 = Ya, 0 = Tidak
   has_diabetes: number; // 1 = Ya, 0 = Tidak
   has_high_cholesterol: number; // 1 = Ya, 0 = Tidak
-  sleep_quality: number; // 1–5 (1 = sangat buruk, 5 = sangat baik)
+  sleep_quality: number; // skala IFLS: 1 = sangat baik, 5 = sangat buruk
   sleep_disturbance: number; // 1–5 (1 = jarang, 5 = selalu)
 }
 
