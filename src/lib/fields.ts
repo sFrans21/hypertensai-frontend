@@ -62,6 +62,14 @@ const sleepQuality: SelectOption[] = [
   { value: 5, label: "5 — Sangat buruk" },
 ];
 
+// const sleepQuality: SelectOption[] = [
+//   { value: 5, label: "1 — Sangat buruk" },
+//   { value: 4, label: "2 — Buruk" },
+//   { value: 3, label: "3 — Cukup" },
+//   { value: 2, label: "2 — Baik" },
+//   { value: 1, label: "4 — Sangat baik" },
+// ];
+
 const sleepDisturbance: SelectOption[] = [
   { value: 1, label: "1 — Tidak pernah" },
   { value: 2, label: "2 — Jarang" },
