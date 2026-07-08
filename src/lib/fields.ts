@@ -63,9 +63,9 @@ const sleepQuality: SelectOption[] = [
 ];
 
 const sleepDisturbance: SelectOption[] = [
-  { value: 1, label: "1 — Jarang / tidak pernah" },
-  { value: 2, label: "2 — Kadang-kadang" },
-  { value: 3, label: "3 — Cukup sering" },
+  { value: 1, label: "1 — Tidak pernah" },
+  { value: 2, label: "2 — Jarang" },
+  { value: 3, label: "3 — Kadang-kadang" },
   { value: 4, label: "4 — Sering" },
   { value: 5, label: "5 — Selalu" },
 ];
@@ -125,7 +125,8 @@ export const FORM_STEPS: FormStep[] = [
     fields: [
       {
         key: "is_smoker",
-        label: "Apakah Anda pernah mempunyai kebiasaan menghisap rokok?",
+        label:
+          "Apakah Anda pernah atau sedang aktif mengonsumsi tembakau (merokok, melinting, pipa, atau mengunyah)?",
         code: "is_smoker",
         kind: "select",
         options: yesNo,
