@@ -190,9 +190,6 @@ export default function ResultPage() {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-xs font-medium text-muted">
-              Tervalidasi oleh Pedoman Kemenkes/WHO
-            </span>
           </div>
         </div>
       </section>
