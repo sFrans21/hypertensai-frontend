@@ -135,64 +135,64 @@ export default function ResultPage() {
       <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
         {/* Kolom kiri */}
         <div>
-      {/* Hero Section: status risiko */}
-      <section
-        className={`mt-5 animate-fade-up rounded-3xl ${theme.card} px-6 py-8 text-white shadow-float`}
-      >
-        <p className="text-sm font-medium uppercase tracking-wide text-white/80">
-          Status Risiko
-        </p>
-        <p className="mt-1 text-4xl font-extrabold leading-tight">
-          {prediction.risk_status}
-        </p>
+          {/* Hero Section: status risiko */}
+          <section
+            className={`mt-5 animate-fade-up rounded-3xl ${theme.card} px-6 py-8 text-white shadow-float`}
+          >
+            <p className="text-sm font-medium uppercase tracking-wide text-white/80">
+              Status Risiko
+            </p>
+            <p className="mt-1 text-4xl font-extrabold leading-tight">
+              {prediction.risk_status}
+            </p>
 
-        {/* Probabilitas */}
-        <div className="mt-6">
-          <div className="flex items-baseline justify-between">
-            <span className="text-sm font-medium text-white/80">
-              Probabilitas risiko
-            </span>
-            <span className="text-2xl font-bold">{percent}%</span>
-          </div>
-          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-white/25">
-            <div
-              className="h-full rounded-full bg-white transition-all duration-700"
-              style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
-            />
-          </div>
-        </div>
-      </section>
+            {/* Probabilitas */}
+            <div className="mt-6">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-medium text-white/80">
+                  Probabilitas risiko (peluang terkena hipertensi)
+                </span>
+                <span className="text-2xl font-bold">{percent}%</span>
+              </div>
+              <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-white/25">
+                <div
+                  className="h-full rounded-full bg-white transition-all duration-700"
+                  style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
+                />
+              </div>
+            </div>
+          </section>
 
-      <XaiChart data={xai_analysis} inputs={inputs ?? undefined} />
+          <XaiChart data={xai_analysis} inputs={inputs ?? undefined} />
         </div>
 
         {/* Kolom kanan */}
         <div>
-      {/* Clinical Narrative Section */}
-      <section className="mt-6 lg:mt-5">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
-          Penjelasan Klinis
-        </h2>
-        <div className="mt-3 rounded-2xl border border-line bg-gray-50 px-5 py-5">
-          <p className="whitespace-pre-wrap text-[0.95rem] leading-relaxed text-ink">
-            {clinical_narrative}
-          </p>
-          <div className="mt-5 flex items-center gap-2 border-t border-line pt-4">
-            <svg
-              className="h-4 w-4 shrink-0 text-teal-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 1.5l6.5 2.5v5c0 4-2.8 6.8-6.5 8-3.7-1.2-6.5-4-6.5-8v-5L10 1.5zm3.3 6.2a.9.9 0 00-1.3-1.2L9 9.5 7.9 8.4a.9.9 0 10-1.3 1.2l1.8 1.8c.4.4 1 .4 1.3 0l3.6-3.7z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-        </div>
-      </section>
+          {/* Clinical Narrative Section */}
+          <section className="mt-6 lg:mt-5">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
+              Penjelasan Klinis
+            </h2>
+            <div className="mt-3 rounded-2xl border border-line bg-gray-50 px-5 py-5">
+              <p className="whitespace-pre-wrap text-[0.95rem] leading-relaxed text-ink">
+                {clinical_narrative}
+              </p>
+              <div className="mt-5 flex items-center gap-2 border-t border-line pt-4">
+                <svg
+                  className="h-4 w-4 shrink-0 text-teal-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 1.5l6.5 2.5v5c0 4-2.8 6.8-6.5 8-3.7-1.2-6.5-4-6.5-8v-5L10 1.5zm3.3 6.2a.9.9 0 00-1.3-1.2L9 9.5 7.9 8.4a.9.9 0 10-1.3 1.2l1.8 1.8c.4.4 1 .4 1.3 0l3.6-3.7z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
 

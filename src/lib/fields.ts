@@ -55,11 +55,11 @@ const yesNo: SelectOption[] = [
 // hipertensi makin tinggi). Label WAJIB mengikuti arah tersebut, jika terbalik
 // maka "Sangat buruk" justru terkirim sebagai nilai 1 dan SHAP salah arah.
 const sleepQuality: SelectOption[] = [
-  { value: 1, label: "1 — Sangat baik" },
-  { value: 2, label: "2 — Baik" },
+  { value: 1, label: "1 — Sangat buruk" },
+  { value: 2, label: "2 — Buruk" },
   { value: 3, label: "3 — Cukup" },
-  { value: 4, label: "4 — Buruk" },
-  { value: 5, label: "5 — Sangat buruk" },
+  { value: 4, label: "4 — Baik" },
+  { value: 5, label: "5 — Sangat baik" },
 ];
 
 // const sleepQuality: SelectOption[] = [

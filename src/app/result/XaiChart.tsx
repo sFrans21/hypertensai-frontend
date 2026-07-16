@@ -84,9 +84,11 @@ export default function XaiChart({
         </div>
 
         <p className="mt-3 text-xs leading-relaxed text-muted">
-          Panjang batang menunjukkan besar kontribusi relatif tiap faktor. Warna
-          menunjukkan arah: hijau menurunkan, merah menaikkan estimasi risiko.
-          Ini bukan persentase risiko total Anda.
+          Persentase (%) pada pengaruh faktor risiko menunjukkan porsi
+          kontribusi atau seberapa besar pengaruh faktor tersebut dalam
+          menentukan status risiko anda, bukan nilai risiko fitur itu sendiri.
+          Warna menunjukkan arah: hijau menurunkan, merah menaikkan estimasi
+          risiko. Ini bukan persentase risiko total Anda.
         </p>
       </div>
     </section>
@@ -109,6 +111,9 @@ function BarView({ data }: { data: Factor[] }) {
               )}
               <span className="font-bold" style={{ color: d.color }}>
                 {d.percent.toFixed(1)}%
+              </span>
+              <span className="text-[11px] font-normal text-muted">
+                (dari total pengaruh)
               </span>
             </span>
           </div>
