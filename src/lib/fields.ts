@@ -187,24 +187,27 @@ export const FORM_STEPS: FormStep[] = [
       {
         key: "hard_act_last7d",
         label:
-          "Selama 7 hari terakhir, apakah anda melakukan kegiatan fisik berat selama 10 menit berturut-turut? (Kegiatan fisik berat, yaitu kegiatan yang membuat anda bernafas jauh lebih berat dari biasanya, misal: mengangkat barang berat, menggali, mencangkul, bersepeda sambil membawa beban berat, dan sebagainya)",
+          "Selama 7 hari terakhir, apakah anda melakukan kegiatan fisik berat selama 10 menit berturut-turut?",
         code: "hard_act_last7d",
+        hint: "Kegiatan fisik berat, yaitu kegiatan yang membuat anda bernafas jauh lebih berat dari biasanya, misal: mengangkat barang berat, menggali, mencangkul, bersepeda sambil membawa beban berat, dan sebagainya.",
         kind: "select",
         options: yesNo,
       },
       {
         key: "moderate_act_last7d",
         label:
-          "Selama 7 hari terakhir, apakah anda melakukan kegiatan fisik sedang selama 10 menit berturut-turut? (Kegiatan fisik sedang, yaitu kegiatan yang membuat anda bernafas agak lebih berat dari biasanya, seperti mengangkat barang yang tidak terlalu berat, bersepeda dalam kecepatan biasa, atau mengepel lantai (tidak termasuk berjalan kaki)",
+          "Selama 7 hari terakhir, apakah anda melakukan kegiatan fisik sedang selama 10 menit berturut-turut?",
         code: "moderate_act_last7d",
+        hint: "Kegiatan fisik sedang, yaitu kegiatan yang membuat anda bernafas agak lebih berat dari biasanya, seperti mengangkat barang yang tidak terlalu berat, bersepeda dalam kecepatan biasa, atau mengepel lantai (tidak termasuk berjalan kaki).",
         kind: "select",
         options: yesNo,
       },
       {
         key: "walking_last7d",
         label:
-          "Selama 7 hari terakhir, apakah anda melakukan jalan kaki selama 10 menit berturut-turut? (jalan kaki, termasuk berjalan kaki di pekerjaan, di rumah, atau dari satu tempat ke tempat lain. Ini termasuk juga pada saat berekreasi, olahraga, atau di waktu luang.)",
+          "Selama 7 hari terakhir, apakah anda melakukan jalan kaki selama 10 menit berturut-turut?",
         code: "walking_last7d",
+        hint: "jalan kaki, termasuk berjalan kaki di pekerjaan, di rumah, atau dari satu tempat ke tempat lain. Ini termasuk juga pada saat berekreasi, olahraga, atau di waktu luang).",
         kind: "select",
         options: yesNo,
       },
