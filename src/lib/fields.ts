@@ -13,8 +13,29 @@ import type { AnalyzePayload } from "./types";
 // skala CES-D), bukan dari PRD, agar label formulir bermakna secara klinis.
 // ============================================================================
 
-/** Field formulir di luar kontrak API — dipakai untuk menghitung BMI sebelum dikirim. */
-export type ExtraFieldKey = "weight_kg" | "height_cm";
+/**
+ * Field formulir di luar kontrak API (`AnalyzePayload`). Nilainya dipakai untuk
+ * menurunkan fitur model sebelum dikirim, bukan dikirim langsung:
+ *  - `weight_kg` & `height_cm` -> dihitung menjadi `bmi`.
+ *  - `hard_act_last7d`, `moderate_act_last7d`, `walking_last7d` -> diturunkan
+ *    menjadi `active_status` (aktif bila berat dan/atau sedang; kurang aktif
+ *    bila hanya jalan kaki).
+ *  - `has_noodles` + `noodles_days_last7d` -> diturunkan menjadi
+ *    `freq_noodles`, dan `has_fast_food` + `fast_food_days_last7d` menjadi
+ *    `freq_fast_food`. Pasangan ini meniru struktur kuesioner IFLS-5 buku 3B
+ *    modul FM (FM02 = pernah/tidak, FM03 = jumlah hari), sehingga jawaban
+ *    "tidak" otomatis berarti nol hari alias kategori jarang.
+ */
+export type ExtraFieldKey =
+  | "weight_kg"
+  | "height_cm"
+  | "hard_act_last7d"
+  | "moderate_act_last7d"
+  | "walking_last7d"
+  | "has_noodles"
+  | "noodles_days_last7d"
+  | "has_fast_food"
+  | "fast_food_days_last7d";
 
 export type FieldKey = keyof AnalyzePayload | ExtraFieldKey;
 
@@ -36,6 +57,11 @@ export interface FieldDef {
   /** Jika true, field boleh dikosongkan (tidak wajib diisi). */
   optional?: boolean;
   options?: SelectOption[];
+  /**
+   * Tampilkan field hanya bila field lain bernilai tertentu (skip pattern
+   * kuesioner). Field yang tersembunyi tidak divalidasi dan tidak wajib diisi.
+   */
+  showIf?: { key: FieldKey; equals: string };
 }
 
 export interface FormStep {
@@ -48,34 +74,6 @@ export interface FormStep {
 const yesNo: SelectOption[] = [
   { value: 0, label: "Tidak" },
   { value: 1, label: "Ya" },
-];
-
-// Skala IFLS-5 `tdr01` (PSQI, tdrtype=2): 1 = kualitas terbaik ... 5 = terburuk.
-// Model dilatih pada skala mentah ini (nilai tinggi = tidur makin buruk = risiko
-// hipertensi makin tinggi). Label WAJIB mengikuti arah tersebut, jika terbalik
-// maka "Sangat buruk" justru terkirim sebagai nilai 1 dan SHAP salah arah.
-const sleepQuality: SelectOption[] = [
-  { value: 1, label: "1 — Sangat buruk" },
-  { value: 2, label: "2 — Buruk" },
-  { value: 3, label: "3 — Cukup" },
-  { value: 4, label: "4 — Baik" },
-  { value: 5, label: "5 — Sangat baik" },
-];
-
-// const sleepQuality: SelectOption[] = [
-//   { value: 5, label: "1 — Sangat buruk" },
-//   { value: 4, label: "2 — Buruk" },
-//   { value: 3, label: "3 — Cukup" },
-//   { value: 2, label: "4 — Baik" },
-//   { value: 1, label: "5 — Sangat baik" },
-// ];
-
-const sleepDisturbance: SelectOption[] = [
-  { value: 1, label: "1 — Tidak pernah" },
-  { value: 2, label: "2 — Jarang" },
-  { value: 3, label: "3 — Kadang-kadang" },
-  { value: 4, label: "4 — Sering" },
-  { value: 5, label: "5 — Selalu" },
 ];
 
 export const FORM_STEPS: FormStep[] = [
@@ -127,18 +125,96 @@ export const FORM_STEPS: FormStep[] = [
     ],
   },
   {
-    id: "riwayat-medis",
-    title: "Riwayat Medis & Gaya Hidup",
-    subtitle: "Kondisi kesehatan dan kebiasaan yang memengaruhi tekanan darah.",
+    id: "gaya-hidup",
+    title: "Gaya Hidup",
+    subtitle: "Kebiasaan yang memengaruhi tekanan darah.",
     fields: [
       {
-        key: "is_smoker",
+        key: "has_tobacco",
         label:
           "Apakah Anda pernah atau sedang aktif mengonsumsi tembakau (merokok, melinting, pipa, atau mengunyah)?",
-        code: "is_smoker",
+        code: "has_tobacco",
         kind: "select",
         options: yesNo,
       },
+      {
+        key: "has_noodles",
+        label: "Dalam 7 hari terakhir, apakah Anda makan mie instan?",
+        code: "fm02 (fmtype K)",
+        kind: "select",
+        options: yesNo,
+      },
+      {
+        key: "noodles_days_last7d",
+        label: "Berapa hari Anda makan mie instan dalam 7 hari terakhir?",
+        code: "fm03 (fmtype K)",
+        hint: "Konsumsi minimal 3 hari per minggu tergolong sering.",
+        kind: "number",
+        unit: "hari",
+        min: 1,
+        max: 7,
+        step: 1,
+        showIf: { key: "has_noodles", equals: "1" },
+      },
+      {
+        key: "has_fast_food",
+        label:
+          "Dalam 7 hari terakhir, apakah Anda makan makanan cepat saji (misal: KFC, burger, pizza)?",
+        code: "fm02 (fmtype L)",
+        kind: "select",
+        options: yesNo,
+      },
+      {
+        key: "fast_food_days_last7d",
+        label:
+          "Berapa hari Anda makan makanan cepat saji dalam 7 hari terakhir?",
+        code: "fm03 (fmtype L)",
+        hint: "Konsumsi minimal 3 hari per minggu tergolong sering.",
+        kind: "number",
+        unit: "hari",
+        min: 1,
+        max: 7,
+        step: 1,
+        showIf: { key: "has_fast_food", equals: "1" },
+      },
+    ],
+  },
+  {
+    id: "aktivitas-fisik",
+    title: "Aktivitas Fisik",
+    subtitle: "Aktivitas fisik responden",
+    fields: [
+      {
+        key: "hard_act_last7d",
+        label:
+          "Selama 7 hari terakhir, apakah anda melakukan kegiatan fisik berat selama 10 menit berturut-turut? (Kegiatan fisik berat, yaitu kegiatan yang membuat anda bernafas jauh lebih berat dari biasanya, misal: mengangkat barang berat, menggali, mencangkul, bersepeda sambil membawa beban berat, dan sebagainya)",
+        code: "hard_act_last7d",
+        kind: "select",
+        options: yesNo,
+      },
+      {
+        key: "moderate_act_last7d",
+        label:
+          "Selama 7 hari terakhir, apakah anda melakukan kegiatan fisik sedang selama 10 menit berturut-turut? (Kegiatan fisik sedang, yaitu kegiatan yang membuat anda bernafas agak lebih berat dari biasanya, seperti mengangkat barang yang tidak terlalu berat, bersepeda dalam kecepatan biasa, atau mengepel lantai (tidak termasuk berjalan kaki)",
+        code: "moderate_act_last7d",
+        kind: "select",
+        options: yesNo,
+      },
+      {
+        key: "walking_last7d",
+        label:
+          "Selama 7 hari terakhir, apakah anda melakukan jalan kaki selama 10 menit berturut-turut? (jalan kaki, termasuk berjalan kaki di pekerjaan, di rumah, atau dari satu tempat ke tempat lain. Ini termasuk juga pada saat berekreasi, olahraga, atau di waktu luang.)",
+        code: "walking_last7d",
+        kind: "select",
+        options: yesNo,
+      },
+    ],
+  },
+  {
+    id: "riwayat-medis",
+    title: "Riwayat Medis",
+    subtitle: "Riwayat penyakit",
+    fields: [
       {
         key: "has_diabetes",
         label:
@@ -155,28 +231,21 @@ export const FORM_STEPS: FormStep[] = [
         kind: "select",
         options: yesNo,
       },
-    ],
-  },
-  {
-    id: "tidur",
-    title: "Kualitas Tidur",
-    subtitle: "Pola tidur Anda dalam sebulan terakhir.",
-    fields: [
       {
-        key: "sleep_quality",
+        key: "has_kidney_disease",
         label:
-          "Dalam 1 minggu terakhir, bagaimana Anda menilai kualitas tidur Anda?",
-        code: "sleep_quality",
+          "Apakah Dokter/Paramedis/Perawat/Bidan pernah mengatakan bahwa Anda memiliki penyakit ginjal?",
+        code: "has_kidney_disease",
         kind: "select",
-        options: sleepQuality,
+        options: yesNo,
       },
       {
-        key: "sleep_disturbance",
+        key: "has_stroke",
         label:
-          "Dalam satu minggu terakhir, seberapa sering Anda mengalami gangguan tidur (sulit tidur atau sering terbangun)?",
-        code: "sleep_disturbance",
+          "Apakah Dokter/Paramedis/Perawat/Bidan pernah mengatakan bahwa Anda memiliki penyakit stroke?",
+        code: "has_stroke",
         kind: "select",
-        options: sleepDisturbance,
+        options: yesNo,
       },
     ],
   },
@@ -184,6 +253,55 @@ export const FORM_STEPS: FormStep[] = [
 
 /** Semua field dalam urutan kontrak API. */
 export const ALL_FIELDS: FieldDef[] = FORM_STEPS.flatMap((s) => s.fields);
+
+/** Ambang kategori "sering" untuk frekuensi makan (hari per minggu). */
+export const AMBANG_SERING_HARI = 3;
+
+/**
+ * Pasangan pertanyaan FM02/FM03 -> fitur kategorikal frekuensi makan.
+ * Dipakai bersama oleh formulir (penyusunan payload) dan halaman hasil
+ * (penampilan nilai input), agar aturannya hanya ditulis satu kali.
+ */
+export const FREQ_DERIVED: Record<
+  "freq_noodles" | "freq_fast_food",
+  { hasKey: ExtraFieldKey; daysKey: ExtraFieldKey }
+> = {
+  freq_noodles: {
+    hasKey: "has_noodles",
+    daysKey: "noodles_days_last7d",
+  },
+  freq_fast_food: {
+    hasKey: "has_fast_food",
+    daysKey: "fast_food_days_last7d",
+  },
+};
+
+/**
+ * Menurunkan kategori frekuensi makan dari jawaban FM02 + FM03.
+ * Menjawab "tidak" berarti nol hari, sehingga otomatis tergolong jarang (0) —
+ * persis seperti penanganan structural missing di pipeline data preparation.
+ * Mengembalikan null bila pertanyaan pokoknya belum dijawab.
+ */
+export function deriveFreq(
+  hasRaw: string | undefined,
+  daysRaw: string | undefined,
+): number | null {
+  if (hasRaw === undefined || hasRaw === "") return null;
+  if (Number(hasRaw) !== 1) return 0;
+  const days = Number(daysRaw);
+  if (!Number.isFinite(days) || daysRaw === "" || daysRaw === undefined)
+    return null;
+  return days >= AMBANG_SERING_HARI ? 1 : 0;
+}
+
+/** Field yang sedang tampil menurut aturan `showIf` (skip pattern kuesioner). */
+export function isFieldVisible(
+  field: FieldDef,
+  values: Record<string, string>,
+): boolean {
+  if (!field.showIf) return true;
+  return values[field.showIf.key] === field.showIf.equals;
+}
 
 /** Nilai awal formulir kosong (string agar input terkontrol & mudah divalidasi). */
 export function emptyFormValues(): Record<FieldKey, string> {
@@ -212,6 +330,27 @@ export function displayInputValue(
     if (weight > 0 && heightM > 0)
       return (weight / (heightM * heightM)).toFixed(1);
     return null;
+  }
+
+  // `active_status` tidak diinput langsung — diturunkan dari pertanyaan aktivitas
+  // fisik: aktif bila berat dan/atau sedang, kurang aktif bila hanya jalan kaki.
+  if (featureKey === "active_status") {
+    const hard = values.hard_act_last7d;
+    const moderate = values.moderate_act_last7d;
+    if (hard === "" && moderate === "") return null;
+    return Number(hard) === 1 || Number(moderate) === 1
+      ? "Aktif"
+      : "Kurang aktif";
+  }
+
+  // Frekuensi makan: diturunkan dari pasangan FM02 (pernah/tidak) + FM03 (hari).
+  if (featureKey === "freq_noodles" || featureKey === "freq_fast_food") {
+    const { hasKey, daysKey } = FREQ_DERIVED[featureKey];
+    const freq = deriveFreq(values[hasKey], values[daysKey]);
+    if (freq === null) return null;
+    if (Number(values[hasKey]) !== 1) return "Jarang (tidak konsumsi)";
+    const days = Number(values[daysKey]);
+    return `${freq === 1 ? "Sering" : "Jarang"} (${days} hari/minggu)`;
   }
 
   const field = ALL_FIELDS.find((f) => f.key === featureKey);

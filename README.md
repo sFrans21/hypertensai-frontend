@@ -44,7 +44,7 @@ src/
 ├─ app/
 │  ├─ layout.tsx        Root layout (mobile constraint max-w-md)
 │  ├─ page.tsx          Landing page
-│  ├─ form/page.tsx     Wizard formulir 3 langkah (9 input → 8 fitur API)
+│  ├─ form/page.tsx     Wizard formulir 4 langkah (15 input → 11 fitur API)
 │  ├─ result/
 │  │  ├─ page.tsx        Halaman hasil (status, probabilitas, faktor risiko, narasi)
 │  │  └─ XaiChart.tsx    Bar chart kontribusi SHAP per faktor
@@ -57,23 +57,33 @@ src/
 
 ## Kontrak API
 
-**Request** — `POST {NEXT_PUBLIC_API_URL}/api/v1/analyze` (JSON numerik, **8 fitur**):
+**Request** — `POST {NEXT_PUBLIC_API_URL}/api/v1/analyze` (JSON numerik, **11 fitur**,
+urutan mengikuti `feature_names` model CatBoost):
 
 ```json
 {
   "age": 45,
   "is_female": 0,
   "bmi": 26.4,
-  "is_smoker": 1,
+  "has_tobacco": 1,
   "has_diabetes": 0,
   "has_high_cholesterol": 1,
-  "sleep_quality": 2,
-  "sleep_disturbance": 1
+  "has_kidney_disease": 0,
+  "has_stroke": 0,
+  "active_status": 0,
+  "freq_noodles": 1,
+  "freq_fast_food": 0
 }
 ```
 
-> `sleep_quality` mengikuti skala mentah IFLS-5 `tdr01`: **1 = kualitas terbaik … 5 = terburuk**
-> (nilai tinggi = tidur makin buruk = risiko naik). `bmi` dihitung di frontend dari berat & tinggi.
+> Tiga fitur diturunkan di sisi klien, tidak diinput langsung:
+> - `bmi` dari berat (kg) & tinggi (cm).
+> - `active_status` = 1 bila responden melakukan aktivitas fisik berat dan/atau sedang
+>   dalam 7 hari terakhir, 0 bila hanya jalan kaki (kriteria Riskesdas 2013).
+> - `freq_noodles` & `freq_fast_food` = 1 (sering) bila dikonsumsi **≥ 3 hari** dalam
+>   7 hari terakhir, 0 (jarang) bila ≤ 2 hari — termasuk yang menjawab "tidak"
+>   pada pertanyaan penyaringnya. Ambang mengikuti Destiani dkk. (2021) dan identik
+>   dengan aturan di `data_preparation_hipertensi.py`.
 
 **Response** — aplikasi merender `data.prediction`, `data.xai_analysis`, dan
 `data.clinical_narrative`:

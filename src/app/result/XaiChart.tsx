@@ -2,26 +2,21 @@
 
 import { displayInputValue } from "@/lib/fields";
 
+// Label untuk 11 fitur model CatBoost (`best_hipertensi_model.pkl`). Kunci di
+// sini harus sama persis dengan `feature_names` model agar hasil SHAP dari
+// backend tampil dengan label Bahasa Indonesia, bukan kunci mentah.
 const FEATURE_LABELS: Record<string, string> = {
   age: "Usia",
   is_female: "Jenis kelamin",
   bmi: "BMI",
-  waist_cm: "Lingkar pinggang",
-  is_smoker: "Merokok",
-  freq_instant_noodle: "Konsumsi mi instan",
-  ak02: "Aktivitas berat",
-  ak05: "Aktivitas sedang",
-  ak07: "Durasi aktivitas",
+  has_tobacco: "Konsumsi tembakau",
   has_diabetes: "Diabetes",
   has_high_cholesterol: "Kolesterol tinggi",
-  sleep_quality: "Kualitas tidur",
-  sleep_disturbance: "Gangguan tidur",
-  genetic_risk_score: "Riwayat keluarga",
-  ps_A: "Mudah terganggu",
-  ps_B: "Sulit konsentrasi",
-  ps_C: "Perasaan sedih",
-  ps_E: "Optimisme",
-  ps_F: "Kecemasan",
+  has_kidney_disease: "Penyakit ginjal",
+  has_stroke: "Riwayat stroke",
+  active_status: "Status aktivitas fisik",
+  freq_noodles: "Frekuensi mie instan",
+  freq_fast_food: "Frekuensi makanan cepat saji",
 };
 
 const UP = "#DC2626"; // merah: menaikkan risiko

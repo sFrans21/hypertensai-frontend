@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  ALL_FIELDS,
   FORM_STEPS,
+  FREQ_DERIVED,
+  deriveFreq,
   emptyFormValues,
+  isFieldVisible,
   type FieldDef,
   type FieldKey,
 } from "@/lib/fields";
@@ -41,9 +45,22 @@ export default function FormPage() {
   const step = FORM_STEPS[stepIndex];
   const isLastStep = stepIndex === FORM_STEPS.length - 1;
   const progress = ((stepIndex + 1) / FORM_STEPS.length) * 100;
+  // Pertanyaan lanjutan (mis. jumlah hari konsumsi) hanya muncul bila
+  // pertanyaan pokoknya dijawab "Ya", mengikuti skip pattern kuesioner IFLS.
+  const visibleFields = step.fields.filter((f) => isFieldVisible(f, values));
 
   function update(key: FieldKey, value: string) {
-    setValues((v) => ({ ...v, [key]: value }));
+    setValues((v) => {
+      const next = { ...v, [key]: value };
+      // Bila pertanyaan pokok berubah menjadi bukan "Ya", kosongkan pertanyaan
+      // lanjutannya supaya tidak menyisakan jawaban lama yang tersembunyi.
+      for (const f of ALL_FIELDS) {
+        if (f.showIf?.key === key && value !== f.showIf.equals) {
+          next[f.key] = "";
+        }
+      }
+      return next;
+    });
     setErrors((e) => ({ ...e, [key]: undefined }));
     setApiError(null);
   }
@@ -64,7 +81,7 @@ export default function FormPage() {
   function validateStep(): boolean {
     const next: Partial<Record<FieldKey, string>> = {};
     let ok = true;
-    for (const field of step.fields) {
+    for (const field of visibleFields) {
       const msg = validateField(field, values[field.key]);
       if (msg) {
         next[field.key] = msg;
@@ -103,21 +120,49 @@ export default function FormPage() {
   }
 
   function buildPayload(): AnalyzePayload {
+    // Field formulir yang HANYA dipakai untuk menurunkan fitur model, sehingga
+    // tidak ikut dikirim mentah-mentah ke API.
+    const derivedOnly = new Set<FieldKey>([
+      "weight_kg",
+      "height_cm",
+      "hard_act_last7d",
+      "moderate_act_last7d",
+      "walking_last7d",
+      "has_noodles",
+      "noodles_days_last7d",
+      "has_fast_food",
+      "fast_food_days_last7d",
+    ]);
+
     // Semua nilai dikirim sebagai tipe numerik sesuai kontrak API.
-    const out = {} as Record<FieldKey, number | null>;
+    const out = {} as Record<string, number | null>;
     for (const s of FORM_STEPS) {
       for (const f of s.fields) {
-        if (f.key === "weight_kg" || f.key === "height_cm") continue;
+        if (derivedOnly.has(f.key)) continue;
         const raw = values[f.key];
         out[f.key] =
           raw === "" ? (f.optional ? null : Number(raw)) : Number(raw);
       }
     }
+    // perhitungan active_status
+    const hard = Number(values.hard_act_last7d);
+    const moderate = Number(values.moderate_act_last7d);
+
+    out.active_status = hard === 1 || moderate === 1 ? 1 : 0;
+
     // BMI dihitung dari berat (kg) dan tinggi (cm), bukan diinput langsung.
     const weight = Number(values.weight_kg);
     const heightM = Number(values.height_cm) / 100;
     out.bmi =
       heightM > 0 ? Number((weight / (heightM * heightM)).toFixed(1)) : 0;
+
+    // Frekuensi makan: FM02 (pernah/tidak) + FM03 (jumlah hari) -> jarang/sering.
+    // Menjawab "tidak" berarti nol hari, jadi otomatis jarang (0).
+    for (const featureKey of ["freq_noodles", "freq_fast_food"] as const) {
+      const { hasKey, daysKey } = FREQ_DERIVED[featureKey];
+      out[featureKey] = deriveFreq(values[hasKey], values[daysKey]) ?? 0;
+    }
+
     return out as unknown as AnalyzePayload;
   }
 
@@ -181,7 +226,7 @@ export default function FormPage() {
 
         {/* Pertanyaan — berjajar vertikal (satu kolom) */}
         <div className="mt-6 space-y-6">
-          {step.fields.map((field) => (
+          {visibleFields.map((field) => (
             <Field
               key={field.key}
               field={field}
@@ -273,6 +318,9 @@ function Field({
       >
         {field.label}
       </label>
+      {field.hint && (
+        <p className="mt-1 text-xs leading-relaxed text-muted">{field.hint}</p>
+      )}
 
       {field.kind === "select" ? (
         <select

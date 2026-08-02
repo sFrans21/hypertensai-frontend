@@ -4,16 +4,34 @@
 // JANGAN mengubah nama kunci (key) di bawah ini.
 // ============================================================================
 
-/** Payload yang dikirim ke POST {NEXT_PUBLIC_API_URL}/api/v1/analyze */
+/**
+ * Payload yang dikirim ke POST {NEXT_PUBLIC_API_URL}/api/v1/analyze
+ *
+ * Berisi TEPAT 11 fitur yang dipakai model (CatBoost `best_hipertensi_model.pkl`),
+ * dengan urutan mengikuti `feature_names` model. Tiga di antaranya adalah fitur
+ * turunan yang dihitung di sisi klien, bukan diinput langsung:
+ *  - `bmi`            <- berat (kg) dan tinggi (cm).
+ *  - `active_status`  <- aktif (1) bila responden melakukan aktivitas fisik
+ *                        berat dan/atau sedang, kurang aktif (0) bila hanya
+ *                        aktivitas ringan (jalan kaki).
+ *  - `freq_noodles` & `freq_fast_food` <- sering (1) bila dikonsumsi minimal
+ *                        3 hari dalam 7 hari terakhir, jarang (0) bila paling
+ *                        banyak 2 hari (termasuk yang tidak mengonsumsi sama
+ *                        sekali). Ambang mengikuti Destiani dkk. (2021).
+ * Pertanyaan mentah penurunnya hanya dipakai di formulir, tidak dikirim ke API.
+ */
 export interface AnalyzePayload {
   age: number;
-  is_female: number; // 1 = Perempuan, 0 = Laki-laki
-  bmi: number; // dihitung dari weight_kg & height_cm
-  is_smoker: number; // 1 = Ya, 0 = Tidak
-  has_diabetes: number; // 1 = Ya, 0 = Tidak
-  has_high_cholesterol: number; // 1 = Ya, 0 = Tidak
-  sleep_quality: number; // skala IFLS: 1 = sangat baik, 5 = sangat buruk
-  sleep_disturbance: number; // 1–5 (1 = jarang, 5 = selalu)
+  is_female: number;
+  bmi: number;
+  has_tobacco: number;
+  has_diabetes: number;
+  has_high_cholesterol: number;
+  has_kidney_disease: number;
+  has_stroke: number;
+  active_status: number;
+  freq_noodles: number;
+  freq_fast_food: number;
 }
 
 export interface Prediction {
