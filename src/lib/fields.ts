@@ -148,7 +148,6 @@ export const FORM_STEPS: FormStep[] = [
         key: "noodles_days_last7d",
         label: "Berapa hari Anda makan mie instan dalam 7 hari terakhir?",
         code: "fm03 (fmtype K)",
-        hint: "Konsumsi minimal 3 hari per minggu tergolong sering.",
         kind: "number",
         unit: "hari",
         min: 1,
@@ -169,7 +168,6 @@ export const FORM_STEPS: FormStep[] = [
         label:
           "Berapa hari Anda makan makanan cepat saji dalam 7 hari terakhir?",
         code: "fm03 (fmtype L)",
-        hint: "Konsumsi minimal 3 hari per minggu tergolong sering.",
         kind: "number",
         unit: "hari",
         min: 1,
