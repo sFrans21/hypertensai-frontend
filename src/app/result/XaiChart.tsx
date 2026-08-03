@@ -100,14 +100,14 @@ function BarView({ data }: { data: Factor[] }) {
             <span className="font-medium text-ink">{d.label}</span>
             <span className="flex items-baseline gap-2">
               {d.input && (
-                <span className="text-xs font-normal text-muted">
+                <span className="text-xs font-semibold text-muted">
                   {d.input}
                 </span>
               )}
               <span className="font-bold" style={{ color: d.color }}>
                 {d.percent.toFixed(1)}%
               </span>
-              <span className="text-[11px] font-normal text-muted">
+              <span className="text-[11px] font-normal text-ink">
                 (dari total pengaruh)
               </span>
             </span>
