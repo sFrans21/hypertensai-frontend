@@ -352,7 +352,7 @@ export function displayInputValue(
     if (Number(values[hasKey]) !== 1) return "Jarang (tidak konsumsi)";
     const days = Number(values[daysKey]);
     return `${freq === 1 ? "Sering" : "Jarang"} (${days} hari/minggu)`;
-  }
+  } // <-- Di sini kurung kurawal penutup sebelumnya hilang
 
   const field = ALL_FIELDS.find((f) => f.key === featureKey);
   const raw = values[featureKey];

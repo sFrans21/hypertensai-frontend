@@ -78,14 +78,33 @@ export default function XaiChart({
           </span>
         </div>
 
-        <p className="mt-3 text-xs leading-relaxed text-muted">
+        {/* <p className="mt-3 text-xs leading-relaxed text-muted">
           Persentase (%) pada pengaruh faktor risiko menunjukkan porsi
           kontribusi atau seberapa besar pengaruh faktor tersebut dalam
           menentukan status risiko anda, bukan nilai risiko fitur itu sendiri.
           Warna menunjukkan arah: hijau menurunkan, merah menaikkan estimasi
-          risiko. Ini bukan persentase risiko total Anda.
-        </p>
+          risiko. Ini bukan persentase risiko total Anda. pada frekuensi makan
+          cepat saji dan mie instan, Konsumsi minimal 3 hari per minggu
+          tergolong sering.",
+        </p> */}
       </div>
+
+      <ul className="mt-4 space-y-1.5 text-xs leading-relaxed text-muted list-disc list-inside">
+        <li>
+          <strong className="text-ink">Persentase (%):</strong> Menunjukkan
+          porsi kontribusi faktor terhadap status risiko, bukan nilai risiko
+          total Anda.
+        </li>
+        <li>
+          <strong className="text-ink">Warna:</strong> Hijau menurunkan estimasi
+          risiko, sedangkan merah meningkatkan estimasi risiko.
+        </li>
+        <li>
+          <strong className="text-ink">Frekuensi Makan:</strong> Konsumsi
+          minimal <strong>3 hari per minggu</strong> tergolong kategori{" "}
+          <em>Sering</em>, dibawahnya tergolong Jarang.
+        </li>
+      </ul>
     </section>
   );
 }
