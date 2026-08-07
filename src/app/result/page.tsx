@@ -175,7 +175,7 @@ export default function ResultPage() {
           {/* Clinical Narrative Section */}
           <section className="mt-6 lg:mt-5">
             <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
-              Penjelasan Klinis
+              Narasi Penjelasan
             </h2>
             <div className="mt-3 rounded-2xl border border-line bg-gray-50 px-5 py-5">
               <p className="whitespace-pre-wrap text-[0.95rem] leading-relaxed text-ink">

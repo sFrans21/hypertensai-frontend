@@ -54,7 +54,7 @@ export default function XaiChart({
   return (
     <section className="mt-6">
       <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
-        Pengaruh Faktor Risiko
+        Grafik/Chart Kontribusi Fitur
       </h2>
 
       <div className="mt-3 rounded-2xl border border-line bg-surface px-5 py-5">
@@ -79,7 +79,7 @@ export default function XaiChart({
         </div>
 
         {/* <p className="mt-3 text-xs leading-relaxed text-muted">
-          Persentase (%) pada pengaruh faktor risiko menunjukkan porsi
+          Persentase (%) pada Grafik/Chart Kontribusi Fitur menunjukkan porsi
           kontribusi atau seberapa besar pengaruh faktor tersebut dalam
           menentukan status risiko anda, bukan nilai risiko fitur itu sendiri.
           Warna menunjukkan arah: hijau menurunkan, merah menaikkan estimasi
