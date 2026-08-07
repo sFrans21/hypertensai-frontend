@@ -49,7 +49,7 @@ export interface FieldDef {
   label: string;
   code: string;
   hint?: string;
-  kind: "number" | "select";
+  kind: "number" | "select" | "text";
   unit?: string;
   min?: number;
   max?: number;
@@ -77,6 +77,22 @@ const yesNo: SelectOption[] = [
 ];
 
 export const FORM_STEPS: FormStep[] = [
+  {
+    id: "identitas",
+    title: "Identitas",
+    subtitle:
+      "Nama hanya dipakai sebagai penanda arsip analisis Anda, tidak memengaruhi hasil.",
+    fields: [
+      {
+        key: "name",
+        label: "Nama (dapat menggunakan nama samaran)",
+        code: "name",
+        hint: "Opsional. Boleh dikosongkan atau memakai nama samaran.",
+        kind: "text",
+        optional: true,
+      },
+    ],
+  },
   {
     id: "demografi",
     title: "Demografi & Fisik",

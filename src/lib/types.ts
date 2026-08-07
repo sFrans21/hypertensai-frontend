@@ -21,6 +21,9 @@
  * Pertanyaan mentah penurunnya hanya dipakai di formulir, tidak dikirim ke API.
  */
 export interface AnalyzePayload {
+  // Identitas log opsional (nama/alias). BUKAN fitur model — hanya metadata
+  // audit log di backend, tidak masuk preprocessing/inferensi/SHAP/LLM.
+  name?: string;
   age: number;
   is_female: number;
   bmi: number;

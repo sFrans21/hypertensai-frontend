@@ -69,6 +69,8 @@ export default function FormPage() {
     if (raw === "" || raw === undefined) {
       return field.optional ? undefined : "Wajib diisi.";
     }
+    // Field teks (mis. nama/alias) tidak divalidasi sebagai angka.
+    if (field.kind === "text") return undefined;
     const num = Number(raw);
     if (!Number.isFinite(num)) return "Masukkan angka yang valid.";
     if (field.min !== undefined && num < field.min)
@@ -121,8 +123,10 @@ export default function FormPage() {
 
   function buildPayload(): AnalyzePayload {
     // Field formulir yang HANYA dipakai untuk menurunkan fitur model, sehingga
-    // tidak ikut dikirim mentah-mentah ke API.
+    // tidak ikut dikirim mentah-mentah ke API. `name` juga dikecualikan dari
+    // loop numerik karena bertipe string dan ditangani terpisah di bawah.
     const derivedOnly = new Set<FieldKey>([
+      "name",
       "weight_kg",
       "height_cm",
       "hard_act_last7d",
@@ -134,8 +138,8 @@ export default function FormPage() {
       "fast_food_days_last7d",
     ]);
 
-    // Semua nilai dikirim sebagai tipe numerik sesuai kontrak API.
-    const out = {} as Record<string, number | null>;
+    // Semua nilai fitur dikirim sebagai tipe numerik sesuai kontrak API.
+    const out = {} as Record<string, number | string | null>;
     for (const s of FORM_STEPS) {
       for (const f of s.fields) {
         if (derivedOnly.has(f.key)) continue;
@@ -144,6 +148,11 @@ export default function FormPage() {
           raw === "" ? (f.optional ? null : Number(raw)) : Number(raw);
       }
     }
+
+    // Nama/alias: metadata log opsional. Kirim hanya bila diisi; jika kosong,
+    // backend otomatis memakai "Anonymous".
+    const nameVal = values.name?.trim();
+    if (nameVal) out.name = nameVal;
     // perhitungan active_status
     const hard = Number(values.hard_act_last7d);
     const moderate = Number(values.moderate_act_last7d);
@@ -322,7 +331,18 @@ function Field({
         <p className="mt-1 text-xs leading-relaxed text-muted">{field.hint}</p>
       )}
 
-      {field.kind === "select" ? (
+      {field.kind === "text" ? (
+        <input
+          id={inputId}
+          type="text"
+          value={value}
+          placeholder="Nama atau nama samaran"
+          aria-describedby={describedBy}
+          aria-invalid={!!error}
+          onChange={(e) => onChange(e.target.value)}
+          className={`${base} ${borderClass} h-12`}
+        />
+      ) : field.kind === "select" ? (
         <select
           id={inputId}
           value={value}

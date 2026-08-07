@@ -28,7 +28,7 @@ function themeFor(status: string): RiskTheme {
       meter: "bg-green-500",
       pill: "bg-green-50 text-green-700",
       label: "Risiko Rendah",
-      heading: "Tidak Hipertensi",
+      heading: "Low Risk",
     };
   }
   if (s.includes("high")) {
@@ -38,7 +38,7 @@ function themeFor(status: string): RiskTheme {
       meter: "bg-red-500",
       pill: "bg-red-50 text-red-700",
       label: "Risiko Tinggi",
-      heading: "Hipertensi",
+      heading: "High Risk",
     };
   }
   // Kategori lain (mis. "Medium") -> kuning.
