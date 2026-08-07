@@ -154,7 +154,7 @@ export default function ResultPage() {
             <div className="mt-6">
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-medium text-white/80">
-                  Probabilitas risiko (peluang terkena hipertensi)
+                  Peluang anda terkena hipertensi sebesar
                 </span>
                 <span className="text-2xl font-bold">{percent}%</span>
               </div>

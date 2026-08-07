@@ -127,7 +127,7 @@ function BarView({ data }: { data: Factor[] }) {
                 {d.percent.toFixed(1)}%
               </span>
               <span className="text-[11px] font-normal text-ink">
-                (dari total pengaruh)
+                {d.color === UP ? "meningkatkan risiko" : "menurunkan risiko"}
               </span>
             </span>
           </div>
