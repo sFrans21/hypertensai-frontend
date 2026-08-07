@@ -67,14 +67,14 @@ export default function XaiChart({
               className="inline-block h-3 w-3 rounded-sm"
               style={{ backgroundColor: DOWN }}
             />
-            Mengurangi risiko
+            mendorong menjauhi risiko hipertensi
           </span>
           <span className="flex items-center gap-2 text-xs text-muted">
             <span
               className="inline-block h-3 w-3 rounded-sm"
               style={{ backgroundColor: UP }}
             />
-            Meningkatkan risiko
+            mendorong ke arah risiko hipertensi
           </span>
         </div>
 
@@ -127,7 +127,9 @@ function BarView({ data }: { data: Factor[] }) {
                 {d.percent.toFixed(1)}%
               </span>
               <span className="text-[11px] font-normal text-ink">
-                {d.color === UP ? "meningkatkan risiko" : "menurunkan risiko"}
+                {d.color === UP
+                  ? "mendorong ke arah risiko hipertensi"
+                  : "mendorong menjauhi risiko hipertensi"}
               </span>
             </span>
           </div>
