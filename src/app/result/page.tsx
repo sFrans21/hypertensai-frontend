@@ -16,6 +16,7 @@ interface RiskTheme {
   meter: string;
   pill: string;
   label: string;
+  heading: string; // teks besar pada hero (mis. "Tidak Hipertensi" / "Hipertensi")
 }
 
 function themeFor(status: string): RiskTheme {
@@ -27,6 +28,7 @@ function themeFor(status: string): RiskTheme {
       meter: "bg-green-500",
       pill: "bg-green-50 text-green-700",
       label: "Risiko Rendah",
+      heading: "Tidak Hipertensi",
     };
   }
   if (s.includes("high")) {
@@ -36,6 +38,7 @@ function themeFor(status: string): RiskTheme {
       meter: "bg-red-500",
       pill: "bg-red-50 text-red-700",
       label: "Risiko Tinggi",
+      heading: "Hipertensi",
     };
   }
   // Kategori lain (mis. "Medium") -> kuning.
@@ -44,6 +47,7 @@ function themeFor(status: string): RiskTheme {
     meter: "bg-amber-500",
     pill: "bg-amber-50 text-amber-700",
     label: "Risiko Sedang",
+    heading: "Risiko Sedang",
   };
 }
 
@@ -143,7 +147,7 @@ export default function ResultPage() {
               Status Risiko
             </p>
             <p className="mt-1 text-4xl font-extrabold leading-tight">
-              {prediction.risk_status}
+              {theme.heading}
             </p>
 
             {/* Probabilitas */}
