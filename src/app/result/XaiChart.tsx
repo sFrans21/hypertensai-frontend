@@ -91,13 +91,18 @@ export default function XaiChart({
 
       <ul className="mt-4 space-y-1.5 text-xs leading-relaxed text-muted list-disc list-inside">
         <li>
-          <strong className="text-ink">Persentase (%):</strong> Menunjukkan
-          porsi kontribusi faktor terhadap status risiko, bukan nilai risiko
-          total Anda.
+          <strong className="text-ink">
+            Persentase di grafik kontribusi fitur
+          </strong>{" "}
+          menunjukkan porsi kontribusi faktor terhadap status risiko, bukan
+          nilai risiko total Anda.
         </li>
         <li>
-          <strong className="text-ink">Warna:</strong> Hijau menurunkan estimasi
-          risiko, sedangkan merah meningkatkan estimasi risiko.
+          <strong className="text-ink">
+            Warna pada persentase kontribusi fitur:
+          </strong>{" "}
+          Hijau menurunkan estimasi risiko, sedangkan merah meningkatkan
+          estimasi risiko.
         </li>
         <li>
           <strong className="text-ink">Frekuensi Makan:</strong> Konsumsi
@@ -112,28 +117,22 @@ export default function XaiChart({
 function BarView({ data }: { data: Factor[] }) {
   const max = data[0]?.percent || 1; // skala relatif ke faktor terbesar
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {data.map((d) => (
         <div key={d.key}>
-          <div className="flex items-baseline justify-between gap-2 text-sm">
-            <span className="font-medium text-ink">{d.label}</span>
-            <span className="flex items-baseline gap-2">
-              {d.input && (
-                <span className="text-xs font-semibold text-muted">
-                  {d.input}
-                </span>
-              )}
-              <span className="font-bold" style={{ color: d.color }}>
-                {d.percent.toFixed(1)}%
-              </span>
-              <span className="text-[11px] font-normal text-ink">
-                {d.color === UP
-                  ? "mendorong ke arah risiko hipertensi"
-                  : "mendorong menjauhi risiko hipertensi"}
-              </span>
+          {/* Baris 1: label (kiri) + persen (kanan, selalu sejajar) */}
+          <div className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="min-w-0 font-medium text-ink">{d.label}</span>
+            <span
+              className="shrink-0 font-bold tabular-nums"
+              style={{ color: d.color }}
+            >
+              {d.percent.toFixed(1)}%
             </span>
           </div>
-          <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-line">
+
+          {/* Bar kontribusi */}
+          <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-line">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -142,6 +141,16 @@ function BarView({ data }: { data: Factor[] }) {
               }}
             />
           </div>
+
+          {/* Baris keterangan: nilai input + arah pengaruh (satu baris penuh) */}
+          <p className="mt-1.5 text-[11px] leading-snug text-muted">
+            {d.input && (
+              <span className="font-semibold text-ink">{d.input} — </span>
+            )}
+            {d.color === UP
+              ? "mendorong ke arah risiko hipertensi"
+              : "mendorong menjauhi risiko hipertensi"}
+          </p>
         </div>
       ))}
     </div>
